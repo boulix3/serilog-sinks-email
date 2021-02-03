@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if MAIL_KIT
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,7 +59,7 @@ namespace Serilog.Sinks.Email
             _textFormatter = textFormatter;
             _subjectFormatter = subjectLineFormatter;
         }
-        
+
         private MimeKit.MimeMessage CreateMailMessage(string payload, string subject)
         {
             var mailMessage = new MimeKit.MimeMessage();
@@ -71,7 +69,7 @@ namespace Serilog.Sinks.Email
             mailMessage.Body = _connectionInfo.IsBodyHtml
                 ? new MimeKit.BodyBuilder { HtmlBody = payload }.ToMessageBody()
                 : new MimeKit.BodyBuilder { TextBody = payload }.ToMessageBody();
-            return mailMessage;            
+            return mailMessage;
         }
 
         /// <summary>
@@ -126,10 +124,16 @@ namespace Serilog.Sinks.Email
                     smtpClient.ServerCertificateValidationCallback += _connectionInfo.ServerCertificateValidationCallback;
                 }
 
-                smtpClient.Connect(
-                    _connectionInfo.MailServer, _connectionInfo.Port,
-                    useSsl: _connectionInfo.EnableSsl);
-
+                if (_connectionInfo.MailKitConnexionOptions.HasValue)
+                {
+                    smtpClient.Connect(_connectionInfo.MailServer, _connectionInfo.Port, options: _connectionInfo.MailKitConnexionOptions.Value);
+                }
+                else
+                {
+                    smtpClient.Connect(
+                        _connectionInfo.MailServer, _connectionInfo.Port,
+                        useSsl: _connectionInfo.EnableSsl);
+                }
                 if (_connectionInfo.NetworkCredentials != null)
                 {
                     smtpClient.Authenticate(
@@ -142,4 +146,3 @@ namespace Serilog.Sinks.Email
         }
     }
 }
-#endif

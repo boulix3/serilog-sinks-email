@@ -15,6 +15,8 @@
 using System.ComponentModel;
 using System.Net;
 
+using MailKit.Security;
+
 namespace Serilog.Sinks.Email
 {
     /// <summary>
@@ -95,5 +97,9 @@ namespace Serilog.Sinks.Email
         /// Sets whether the body contents of the email is HTML. Defaults to false.
         /// </summary>
         public bool IsBodyHtml { get; set; }
+        /// <summary>
+        /// Use MailKit.Security.SecureSocketOptions.None if ssl errors...
+        /// </summary>
+        public SecureSocketOptions? MailKitConnexionOptions { get; set; }
     }
 }
